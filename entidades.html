@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Papel y Luna — Entidades</title>
+  <link rel="stylesheet" href="css/componentes.css" />
+  <link rel="stylesheet" href="css/paginas.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-marca">
+      <img src="img/logo.png" alt="Logo" class="navbar-logo"
+        onerror="this.style.display='none'; document.getElementById('nav-ph').style.display='flex';" />
+      <div class="navbar-logo-placeholder" id="nav-ph" style="display:none;">🌙</div>
+      <div class="navbar-marca-texto">
+        <strong>Papel y Luna</strong>
+        <span>Papelería y Miscelánea</span>
+      </div>
+    </a>
+    <a href="index.html" class="navbar-inicio">← Inicio</a>
+  </nav>
+
+  <div id="loading-ent" style="text-align:center;padding:60px;font-size:1rem;color:var(--gris);">
+    ⏳ Cargando entidades...
+  </div>
+
+  <main class="pagina-contenido" id="contenido-ent" style="display:none;">
+
+    <!-- Tabs -->
+    <div class="navbar-tabs" style="margin-bottom:20px;">
+      <button class="navbar-tab activa" id="tab-ent-categorias" onclick="mostrarEnt('categorias')">🏷️ Categorías</button>
+      <button class="navbar-tab" id="tab-ent-proveedores" onclick="mostrarEnt('proveedores')">🏭 Proveedores</button>
+      <button class="navbar-tab" id="tab-ent-clientes" onclick="mostrarEnt('clientes')">👥 Clientes</button>
+    </div>
+
+    <!-- Global alerts -->
+    <div class="alerta alerta-exito" id="alerta-ent" style="margin-bottom:14px;"></div>
+    <div class="alerta alerta-error" id="alerta-ent-error" style="margin-bottom:14px;"></div>
+
+    <!-- ===================== CATEGORÍAS ===================== -->
+    <div class="ent-seccion activa" id="seccion-categorias">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1>🏷️ Categorías</h1>
+        <button class="btn-primary" onclick="abrirFormEnt('categorias')">+ Nueva Categoría</button>
+      </div>
+
+      <!-- Formulario -->
+      <div class="form-producto oculto" id="form-categorias">
+        <div class="form-producto-titulo">
+          <span id="form-titulo-categorias">Nueva Categoría</span>
+          <button onclick="cerrarFormEnt('categorias')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gris);">✕</button>
+        </div>
+        <input type="hidden" id="cat-id" />
+        <div class="form-fila-2">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" id="cat-nombre" placeholder="Ej: Cuadernos" />
+            <span class="msg-error" id="err-cat-nombre"></span>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <input type="text" id="cat-descripcion" placeholder="Opcional" />
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+          <button class="btn-secondary" onclick="cerrarFormEnt('categorias')">Cancelar</button>
+          <button class="btn-primary" id="btn-guardar-cat" onclick="guardarEntidad('categorias')">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card">
+        <table class="tabla-base">
+          <thead><tr><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead>
+          <tbody id="tbody-categorias"></tbody>
+        </table>
+        <div class="estado-vacio oculto" id="vacio-categorias">No hay categorías registradas.</div>
+      </div>
+    </div>
+
+    <!-- ===================== PROVEEDORES ===================== -->
+    <div class="ent-seccion" id="seccion-proveedores">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1>🏭 Proveedores</h1>
+        <button class="btn-primary" onclick="abrirFormEnt('proveedores')">+ Nuevo Proveedor</button>
+      </div>
+
+      <div class="form-producto oculto" id="form-proveedores">
+        <div class="form-producto-titulo">
+          <span id="form-titulo-proveedores">Nuevo Proveedor</span>
+          <button onclick="cerrarFormEnt('proveedores')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gris);">✕</button>
+        </div>
+        <input type="hidden" id="prov-id" />
+        <div class="form-fila-2">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" id="prov-nombre" placeholder="Nombre del proveedor" />
+            <span class="msg-error" id="err-prov-nombre"></span>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="prov-telefono" placeholder="Ej: 300 000 0000" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Correo</label>
+          <input type="email" id="prov-correo" placeholder="correo@ejemplo.com" />
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+          <button class="btn-secondary" onclick="cerrarFormEnt('proveedores')">Cancelar</button>
+          <button class="btn-primary" id="btn-guardar-prov" onclick="guardarEntidad('proveedores')">Guardar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="tabla-base">
+          <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Acciones</th></tr></thead>
+          <tbody id="tbody-proveedores"></tbody>
+        </table>
+        <div class="estado-vacio oculto" id="vacio-proveedores">No hay proveedores registrados.</div>
+      </div>
+    </div>
+
+    <!-- ===================== CLIENTES ===================== -->
+    <div class="ent-seccion" id="seccion-clientes">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1>👥 Clientes</h1>
+        <button class="btn-primary" onclick="abrirFormEnt('clientes')">+ Nuevo Cliente</button>
+      </div>
+
+      <div class="form-producto oculto" id="form-clientes">
+        <div class="form-producto-titulo">
+          <span id="form-titulo-clientes">Nuevo Cliente</span>
+          <button onclick="cerrarFormEnt('clientes')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gris);">✕</button>
+        </div>
+        <input type="hidden" id="cli-id" />
+        <div class="form-fila-2">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" id="cli-nombre" placeholder="Nombre del cliente" />
+            <span class="msg-error" id="err-cli-nombre"></span>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="cli-telefono" placeholder="Ej: 300 000 0000" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Correo</label>
+          <input type="email" id="cli-correo" placeholder="correo@ejemplo.com" />
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+          <button class="btn-secondary" onclick="cerrarFormEnt('clientes')">Cancelar</button>
+          <button class="btn-primary" id="btn-guardar-cli" onclick="guardarEntidad('clientes')">Guardar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="tabla-base">
+          <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Acciones</th></tr></thead>
+          <tbody id="tbody-clientes"></tbody>
+        </table>
+        <div class="estado-vacio oculto" id="vacio-clientes">No hay clientes registrados.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal eliminar -->
+  <div class="modal-overlay" id="modal-eliminar-ent">
+    <div class="modal-box">
+      <p id="modal-ent-texto"></p>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn-secondary" onclick="cerrarModalEliminarEnt()">Cancelar</button>
+        <button class="btn-danger" onclick="confirmarEliminarEnt()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/entidades.js"></script>
+</body>
+</html>
