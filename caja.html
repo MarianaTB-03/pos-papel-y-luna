@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Papel y Luna — Caja</title>
+  <link rel="stylesheet" href="css/componentes.css" />
+  <link rel="stylesheet" href="css/paginas.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-marca">
+      <img src="img/logo.png" alt="Logo" class="navbar-logo"
+        onerror="this.style.display='none'; document.getElementById('nav-ph').style.display='flex';" />
+      <div class="navbar-logo-placeholder" id="nav-ph" style="display:none;">🌙</div>
+      <div class="navbar-marca-texto">
+        <strong>Papel y Luna</strong>
+        <span>Papelería y Miscelánea</span>
+      </div>
+    </a>
+
+    <div class="navbar-tabs">
+      <button class="navbar-tab activa" id="tab-venta" onclick="mostrarSeccion('venta')">🧾 Venta Activa</button>
+      <button class="navbar-tab" id="tab-historial" onclick="mostrarSeccion('historial')">📋 Historial</button>
+    </div>
+
+    <a href="index.html" class="navbar-inicio">← Inicio</a>
+  </nav>
+
+  <!-- Loading -->
+  <div id="loading-caja" style="text-align:center;padding:60px;font-size:1rem;color:var(--gris);">
+    ⏳ Cargando productos y ventas...
+  </div>
+
+  <main class="pagina-contenido" id="contenido-caja" style="display:none;">
+
+    <!-- ============ SECCIÓN VENTA ============ -->
+    <div class="caja-seccion activa" id="seccion-venta">
+
+      <div class="alerta alerta-error" id="alerta-caja" style="margin-bottom:14px;"></div>
+
+      <div class="caja-grid">
+
+        <!-- Izquierda: búsqueda + tabla de venta -->
+        <div>
+
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+              <h2>🧾 Venta en Curso</h2>
+              <span id="badge-venta-id" style="font-size:0.75rem;color:var(--gris);"></span>
+            </div>
+            <div class="card-body">
+              <div class="buscador-wrap">
+                <span class="icono-buscar">🔍</span>
+                <input type="text" class="buscador-input" id="buscador-input"
+                  placeholder="Buscar producto por nombre o código..."
+                  autocomplete="off" oninput="buscarProductos(this.value)" />
+                <div class="buscador-resultados" id="buscador-resultados"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="overflow-x:auto;">
+              <table class="tabla-base" id="tabla-venta">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th style="text-align:center;">Cant.</th>
+                    <th>Precio Unit.</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-venta"></tbody>
+              </table>
+            </div>
+
+            <div class="estado-vacio" id="venta-vacia">
+              🛒 Busca un producto arriba para comenzar la venta
+            </div>
+
+            <div class="fila-total" id="fila-total" style="display:none;">
+              <span style="font-weight:600; color:var(--gris);">Total</span>
+              <span class="texto-total" id="total-venta">$0</span>
+            </div>
+
+            <div class="venta-acciones" id="venta-acciones" style="display:none;">
+              <button class="btn-secondary" onclick="guardarVentaAbierta()">💾 Guardar Abierta</button>
+              <button class="btn-secondary" onclick="nuevaVenta()">🆕 Nueva Venta</button>
+              <button class="btn-primary" onclick="mostrarPago()">💳 Cobrar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: paneles -->
+        <div>
+
+          <!-- Placeholder -->
+          <div class="panel-lateral card" id="panel-placeholder">
+            <div style="text-align:center; padding:40px 20px; color:var(--gris);">
+              <div style="font-size:2.5rem; margin-bottom:12px;">🌙</div>
+              <p style="font-weight:600;">Papel y Luna</p>
+              <p style="font-size:0.88rem; margin-top:6px;">Selecciona productos y presiona <strong>Cobrar</strong> para proceder al pago.</p>
+            </div>
+          </div>
+
+          <!-- Panel de Pago -->
+          <div class="panel-lateral card oculto" id="panel-pago">
+            <div class="card-header"><h2>💳 Procesar Pago</h2></div>
+            <div class="card-body">
+
+              <div style="margin-bottom:16px;">
+                <div style="font-size:0.85rem;color:var(--gris);margin-bottom:4px;">Total a cobrar</div>
+                <div style="font-size:2rem;font-weight:700;color:var(--texto);" id="pago-total-valor">$0</div>
+              </div>
+
+              <!-- Cliente opcional -->
+              <div class="form-group" style="margin-bottom:12px;">
+                <label>Cliente (opcional)</label>
+                <select id="pago-cliente">
+                  <option value="">— Sin cliente —</option>
+                </select>
+              </div>
+
+              <!-- Método de pago -->
+              <div style="font-size:0.85rem;color:var(--gris);margin-bottom:8px;">Método de pago</div>
+              <div class="metodos-pago" style="margin-bottom:16px;">
+                <button class="metodo-tab activo" id="tab-efectivo" onclick="seleccionarMetodo('efectivo')">💵 Efectivo</button>
+                <button class="metodo-tab" id="tab-nequi" onclick="seleccionarMetodo('nequi')">📱 Nequi</button>
+                <button class="metodo-tab" id="tab-debe" onclick="seleccionarMetodo('debe')">👤 Debe</button>
+              </div>
+
+              <div id="efectivo-panel">
+                <div class="form-group">
+                  <label for="input-efectivo">Efectivo recibido</label>
+                  <input type="number" id="input-efectivo" placeholder="0" min="0" oninput="calcularCambio()" />
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.95rem;padding:10px 0;border-top:1px solid var(--y3);">
+                  <span>Cambio:</span>
+                  <span id="cambio-valor" style="font-weight:700;">$0</span>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;margin-top:16px;">
+                <button class="btn-secondary" onclick="cancelarPago()">Cancelar</button>
+                <button class="btn-primary" style="flex:1;" onclick="confirmarVenta()">✅ Confirmar Venta</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de Factura -->
+          <div class="panel-lateral card oculto" id="panel-factura">
+            <div class="card-header">
+              <h2>🧾 Recibo</h2>
+              <button class="btn-secondary btn-sm" onclick="nuevaVenta()">+ Nueva Venta</button>
+            </div>
+            <div class="card-body recibo-wrap">
+              <div id="recibo-contenido"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SECCIÓN HISTORIAL ============ -->
+    <div class="caja-seccion" id="seccion-historial">
+      <div class="alerta alerta-exito" id="alerta-hist" style="margin-bottom:14px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1>📋 Historial de Ventas</h1>
+        <button class="btn-secondary btn-sm" onclick="recargarHistorial()">🔄 Recargar</button>
+      </div>
+      <div class="estado-vacio oculto" id="historial-vacio">No hay ventas registradas aún.</div>
+      <div id="historial-lista"></div>
+
+      <div class="card oculto" id="panel-detalle-historial" style="margin-top:16px;">
+        <div class="card-header">
+          <h2>Detalle de Venta</h2>
+          <button onclick="document.getElementById('panel-detalle-historial').classList.add('oculto')"
+            style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gris);">✕</button>
+        </div>
+        <div class="card-body recibo-wrap">
+          <div id="recibo-historial"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal editar producto en venta -->
+  <div class="modal-overlay" id="modal-editar-producto">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3>✏️ Editar Producto</h3>
+        <button onclick="cerrarModalEditarProducto()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+      <input type="hidden" id="edit-prod-id" />
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="edit-prod-nombre" />
+      </div>
+      <div class="form-fila-2">
+        <div class="form-group">
+          <label>Precio de venta</label>
+          <input type="number" id="edit-prod-precio" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Costo</label>
+          <input type="number" id="edit-prod-costo" min="0" />
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+        <button class="btn-secondary" onclick="cerrarModalEditarProducto()">Cancelar</button>
+        <button class="btn-primary" id="btn-guardar-edit-prod" onclick="guardarEdicionProducto()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/ventas.js"></script>
+  <script src="js/pago.js"></script>
+  <script src="js/historial.js"></script>
+</body>
+</html>
